@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>متجري</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;800&display=swap" rel="stylesheet">
+<style>
+:root{--g:#0f5c4d;--y:#f2a900;--bg:#f2f5f3;--c:#fff;--t:#16221f;--m:#5d6b67;--l:#d8e0dc}
+*{box-sizing:border-box}
+body{margin:0;font-family:Tajawal,Tahoma,sans-serif;background:var(--bg);color:var(--t);line-height:1.6}
+header{background:var(--g);color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:5}
+header h1{margin:0;font-size:22px;font-weight:800}
+.cartbtn{background:var(--y);color:#20180a;border:0;border-radius:8px;padding:8px 14px;font:inherit;font-weight:800;cursor:pointer}
+main{max-width:960px;margin:0 auto;padding:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+.p{background:var(--c);border:1px solid var(--l);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:6px}
+.p .e{font-size:54px;text-align:center;background:var(--bg);border-radius:8px;padding:8px}
+.p h3{margin:0;font-size:17px}.p .pr{font-weight:800;color:var(--g);font-size:18px}
+button.add,button.main{background:var(--g);color:#fff;border:0;border-radius:8px;padding:10px;font:inherit;font-weight:500;cursor:pointer}
+button.add{margin-top:auto}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--y);outline-offset:2px}
+.box{background:var(--c);border:1px solid var(--l);border-radius:12px;padding:18px;margin-bottom:14px}
+.box h2{margin:0 0 12px;font-size:20px}
+.row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--l)}
+.row:last-child{border:0}.row .n{flex:1}
+.q button{width:28px;height:28px;border:1px solid var(--l);background:#fff;border-radius:6px;cursor:pointer;font-size:16px}
+.q span{display:inline-block;min-width:24px;text-align:center}
+.tot{display:flex;justify-content:space-between;font-weight:800;font-size:18px;padding-top:10px}
+label{display:block;font-weight:500;margin:10px 0 4px}
+input,select,textarea{width:100%;padding:10px;border:1px solid var(--l);border-radius:8px;font:inherit;background:#fff}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:560px){.two{grid-template-columns:1fr}}
+.pay{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--l);border-radius:10px;padding:12px;margin-bottom:8px;cursor:pointer}
+.pay input{width:auto;margin-top:6px}.pay small{display:block;color:var(--m)}
+.pay:has(input:checked){border-color:var(--g);background:#e7f3ef}
+.note{background:#fff6dc;border:1px solid #ecd28a;border-radius:8px;padding:10px;margin-top:10px;font-size:14px}
+.err{color:#b3261e;font-size:14px;margin-top:8px;min-height:20px}
+.nav{display:flex;gap:10px;margin-top:12px}.nav button{flex:1}
+button.sec{background:#fff;color:var(--t);border:1px solid var(--l);border-radius:8px;padding:10px;font:inherit;cursor:pointer}
+.hide{display:none}
+</style>
+</head>
+<body>
+<header><h1 id="shop">متجري</h1><button class="cartbtn" onclick="go('cart')">السلة (<span id="cnt">0</span>)</button></header>
+<main>
+
+<section id="v-shop"><div class="grid" id="grid"></div></section>
+
+<section id="v-cart" class="hide">
+  <div class="box"><h2>سلة الشراء</h2><div id="items"></div>
+    <div class="tot"><span>الإجمالي</span><span id="sum">0</span></div></div>
+  <div class="nav"><button class="sec" onclick="go('shop')">متابعة التسوق</button><button class="main" onclick="checkout()">إتمام الطلب</button></div>
+  <div class="err" id="e-cart"></div>
+</section>
+
+<section id="v-info" class="hide">
+  <div class="box"><h2>بيانات العميل</h2>
+    <label>الاسم بالكامل</label><input id="name" autocomplete="name">
+    <div class="two">
+      <div><label>رقم الهاتف</label><input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="01xxxxxxxxx"></div>
+      <div><label>رقم واتساب (اختياري)</label><input id="wa" type="tel" inputmode="tel"></div>
+    </div>
+    <label>البريد الإلكتروني (Gmail)</label><input id="email" type="email" autocomplete="email">
+    <div class="two">
+      <div><label>المحافظة</label><select id="gov"></select></div>
+      <div><label>المركز / المدينة</label><input id="city"></div>
+    </div>
+    <div class="two">
+      <div><label>القرية / الحي</label><input id="area"></div>
+      <div><label>الشارع ورقم العقار</label><input id="street"></div>
+    </div>
+    <label>علامة مميزة قريبة (اختياري)</label><input id="mark" placeholder="بجوار مسجد / مدرسة ...">
+    <label>ملاحظات على الطلب (اختياري)</label><textarea id="notes" rows="2"></textarea>
+    <div class="err" id="e-info"></div>
+  </div>
+  <div class="nav"><button class="sec" onclick="go('cart')">رجوع</button><button class="main" onclick="toPay()">التالي: طريقة الدفع</button></div>
+</section>
+
+<section id="v-pay" class="hide">
+  <div class="box"><h2>طريقة الدفع</h2><div id="pays"></div>
+    <div id="payx" class="hide">
+      <label id="payl">رقم المحفظة التي حوّلت منها</label><input id="payn" type="tel" inputmode="tel">
+    </div>
+    <div class="note hide" id="paynote"></div>
+    <div class="err" id="e-pay"></div>
+  </div>
+  <div class="box"><div class="tot"><span>إجمالي الطلب</span><span id="sum2">0</span></div></div>
+  <div class="nav"><button class="sec" onclick="go('info')">رجوع</button><button class="main" id="send" onclick="submitOrder()">تأكيد الطلب</button></div>
+</section>
+
+<section id="v-done" class="hide"><div class="box"><h2>تم استلام طلبك ✅</h2><p id="donemsg"></p><button class="main" onclick="reset()">العودة للمتجر</button></div></section>
+</main>
+
+<script>
+/* ====== إعدادات — عدّل هذا الجزء فقط ====== */
+const ORDER_EMAIL = "ma01156595034@gmail.com";   // الجيميل اللي هتستقبل عليه الطلبات
+const WHATSAPP = "201156595034";             // واتساب احتياطي (رقم بالصيغة الدولية)
+const CURRENCY = "ج.م";
+const SHIPPING = 50;                          // سعر الشحن (اجعله 0 لو مجاني)
+const MERCHANT = {                            // أرقام المحافظ التي يحوّل لها العميل
+  vodafone:"", etisalat:"01156595034", orange:"01224982634"
+};
+const PRODUCTS = [
+  {id:1,name:"منتج 1",price:150,e:"👕"},
+  {id:2,name:"منتج 2",price:250,e:"👟"},
+  {id:3,name:"منتج 3",price:90,e:"🎧"},
+  {id:4,name:"منتج 4",price:320,e:"⌚"},
+  {id:5,name:"منتج 5",price:75,e:"🧢"},
+  {id:6,name:"منتج 6",price:480,e:"🎒"}
+];
+/* ========================================= */
+
+const GOVS=["القاهرة","الجيزة","الإسكندرية","القليوبية","الشرقية","الدقهلية","الغربية","المنوفية","كفر الشيخ","البحيرة","دمياط","بورسعيد","الإسماعيلية","السويس","شمال سيناء","جنوب سيناء","الفيوم","بني سويف","المنيا","أسيوط","سوهاج","قنا","الأقصر","أسوان","البحر الأحمر","الوادي الجديد","مطروح"];
+const PAYS=[
+  {k:"vodafone",n:"فودافون كاش",d:()=>"حوّل على: "+MERCHANT.vodafone,w:true},
+  {k:"etisalat",n:"اتصالات كاش",d:()=>"حوّل على: "+MERCHANT.etisalat,w:true},
+  {k:"orange",n:"أورانج كاش",d:()=>"حوّل على: "+MERCHANT.orange,w:true},
+  {k:"cod",n:"الدفع نقدًا عند الاستلام",d:()=>"تدفع للمندوب عند وصول الطلب"},
+  {k:"visa",n:"فيزا / بطاقة بنكية",d:()=>"سنرسل لك رابط دفع آمن بعد تأكيد الطلب"}
+];
+const $=id=>document.getElementById(id);
+for(let i=PAYS.length-1;i>=0;i--){if(PAYS[i].w&&!MERCHANT[PAYS[i].k])PAYS.splice(i,1)}
+let cart={}, pay="";
+const fmt=n=>n.toLocaleString("ar-EG")+" "+CURRENCY;
+const sub=()=>PRODUCTS.reduce((s,p)=>s+(cart[p.id]||0)*p.price,0);
+const count=()=>Object.values(cart).reduce((a,b)=>a+b,0);
+
+$("grid").innerHTML=PRODUCTS.map(p=>`<div class="p"><div class="e">${p.e}</div><h3>${p.name}</h3><div class="pr">${fmt(p.price)}</div><button class="add" onclick="add(${p.id})">أضف للسلة</button></div>`).join("");
+$("gov").innerHTML='<option value="">اختر المحافظة</option>'+GOVS.map(g=>`<option>${g}</option>`).join("");
+$("pays").innerHTML=PAYS.map(p=>`<label class="pay"><input type="radio" name="pay" value="${p.k}" onchange="pickPay('${p.k}')"><span><b>${p.n}</b><small>${p.d()}</small></span></label>`).join("");
+
+function go(v){["shop","cart","info","pay","done"].forEach(x=>$("v-"+x).classList.toggle("hide",x!==v));if(v==="cart")drawCart();scrollTo(0,0)}
+function add(id){cart[id]=(cart[id]||0)+1;upd()}
+function chg(id,d){cart[id]=(cart[id]||0)+d;if(cart[id]<=0)delete cart[id];upd();drawCart()}
+function upd(){$("cnt").textContent=count()}
+function drawCart(){
+  const rows=PRODUCTS.filter(p=>cart[p.id]).map(p=>`<div class="row"><span>${p.e}</span><span class="n">${p.name}<br><small>${fmt(p.price)}</small></span><span class="q"><button onclick="chg(${p.id},-1)" aria-label="إنقاص">−</button><span>${cart[p.id]}</span><button onclick="chg(${p.id},1)" aria-label="زيادة">+</button></span></div>`).join("");
+  $("items").innerHTML=rows||"<p>السلة فارغة. أضف منتجات من المتجر.</p>";
+  $("sum").textContent=fmt(sub());
+}
+function checkout(){if(!count()){$("e-cart").textContent="أضف منتجًا واحدًا على الأقل.";return}$("e-cart").textContent="";go("info")}
+function toPay(){
+  const n=$("name").value.trim(),ph=$("phone").value.trim(),em=$("email").value.trim();
+  let e="";
+  if(n.length<3)e="اكتب الاسم بالكامل.";
+  else if(!/^01[0-25]\d{8}$/.test(ph.replace(/\s|-/g,"")))e="رقم الهاتف غير صحيح (مثال: 01012345678).";
+  else if(!/^\S+@\S+\.\S+$/.test(em))e="البريد الإلكتروني غير صحيح.";
+  else if(!$("gov").value)e="اختر المحافظة.";
+  else if(!$("city").value.trim())e="اكتب المركز أو المدينة.";
+  else if(!$("street").value.trim()&&!$("area").value.trim())e="اكتب العنوان بالتفصيل (الحي أو الشارع).";
+  $("e-info").textContent=e;if(e)return;
+  $("sum2").textContent=fmt(sub()+SHIPPING)+(SHIPPING?" (شامل الشحن "+fmt(SHIPPING)+")":"");
+  go("pay");
+}
+function pickPay(k){
+  pay=k;const p=PAYS.find(x=>x.k===k);
+  $("payx").classList.toggle("hide",!p.w);
+  const nt=$("paynote");nt.classList.remove("hide");
+  nt.textContent=p.w?"حوّل المبلغ الإجمالي ثم اكتب رقم المحفظة التي حوّلت منها، وسنؤكد الطلب بعد وصول التحويل.":k==="cod"?"ستدفع قيمة الطلب والشحن للمندوب عند الاستلام.":"لا تكتب بيانات البطاقة هنا. سنتواصل معك برابط دفع آمن.";
+}
+async function submitOrder(){
+  if(!pay){$("e-pay").textContent="اختر طريقة الدفع.";return}
+  const p=PAYS.find(x=>x.k===pay);
+  if(p.w&&$("payn").value.trim().length<11){$("e-pay").textContent="اكتب رقم المحفظة التي حوّلت منها.";return}
+  $("e-pay").textContent="";
+  const lines=PRODUCTS.filter(x=>cart[x.id]).map(x=>`${x.name} × ${cart[x.id]} = ${x.price*cart[x.id]} ${CURRENCY}`).join("\n");
+  const total=sub()+SHIPPING, id="ORD-"+Date.now().toString().slice(-7);
+  const data={
+    _subject:"طلب جديد "+id+" من "+$("name").value.trim(),_template:"table",_captcha:"false",
+    "رقم الطلب":id,"الاسم":$("name").value.trim(),"الهاتف":$("phone").value.trim(),"واتساب":$("wa").value.trim(),
+    "البريد":$("email").value.trim(),_replyto:$("email").value.trim(),
+    "المحافظة":$("gov").value,"المركز/المدينة":$("city").value.trim(),"القرية/الحي":$("area").value.trim(),
+    "الشارع":$("street").value.trim(),"علامة مميزة":$("mark").value.trim(),"ملاحظات":$("notes").value.trim(),
+    "المنتجات":lines,"الشحن":SHIPPING+" "+CURRENCY,"الإجمالي":total+" "+CURRENCY,
+    "طريقة الدفع":p.n,"رقم المحفظة للعميل":$("payn").value.trim()
+  };
+  const btn=$("send");btn.disabled=true;btn.textContent="جارٍ الإرسال...";
+  try{
+    const r=await fetch("https://formsubmit.co/ajax/"+ORDER_EMAIL,{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},body:JSON.stringify(data)});
+    const j=await r.json();
+    if(!r.ok||j.success==="false")throw 0;
+    $("donemsg").textContent="رقم طلبك "+id+". سنتواصل معك على "+$("phone").value.trim()+" لتأكيد الطلب وموعد التوصيل.";
+    go("done");
+  }catch(e){
+    const body=Object.entries(data).filter(([k])=>k[0]!=="_").map(([k,v])=>k+": "+v).join("\n");
+    const local=!/^https?:$/.test(location.protocol);
+    const wa="https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(data._subject+"\n"+body);
+    $("e-pay").innerHTML=(local?"الموقع مفتوح من ملف على الجهاز، والإرسال التلقائي لا يعمل إلا بعد رفعه على رابط. ":"تعذّر الإرسال التلقائي. ")+'أرسل الطلب الآن عبر <a href="'+wa+'" target="_blank" style="color:#0f5c4d;font-weight:800">واتساب</a> أو <a href="mailto:'+ORDER_EMAIL+"?subject="+encodeURIComponent(data._subject)+"&body="+encodeURIComponent(body)+'" style="color:#0f5c4d;font-weight:800">البريد</a>.';
+  }
+  btn.disabled=false;btn.textContent="تأكيد الطلب";
+}
+function reset(){cart={};upd();pay="";go("shop")}
+</script>
+</body>
+</html>
